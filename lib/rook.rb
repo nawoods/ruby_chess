@@ -1,17 +1,19 @@
 class Rook
-  attr_accessor :position, :player
+  attr_accessor :player
   
-  def initialize(position, player)
-    @position = position
+  def initialize(player)
     @player = player
   end
   
-  def valid_move?(new_position)
-    position.first == new_position.first || position.last == new_position.last
+  def to_s
+    if @player == :white
+      "\u2656"
+    else
+      "\u265c"
+    end
   end
   
-  def move(new_position)
-    return false unless valid_move?(new_position)
-    @position = new_position
+  def valid_move?(old_position, new_position)
+    old_position[0] == new_position[0] || old_position[1] == new_position[1]
   end
 end
