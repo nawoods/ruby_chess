@@ -34,10 +34,12 @@ class Board
     assign_piece(nil, old_sq)
   end
   
-  # private
+  private
   
   def valid_move?(piece, old_sq, new_sq)
     return false if piece.nil? || !piece.valid_move?(old_sq, new_sq)
+    return false if !piece_at_sq(new_sq).nil? && 
+        piece_at_sq(old_sq).player == piece_at_sq(new_sq).player
     return false unless piece.intermediate_spaces(old_sq, new_sq)
         .map { |i| piece_at_sq(i).nil? }.reduce(&:&)
     true
