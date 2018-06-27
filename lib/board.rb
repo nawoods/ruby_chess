@@ -15,7 +15,7 @@ class Board
     ("a".."g").to_a.reverse.each do |letter|
       result += letter
       (1..8).to_a.each do |number|
-        piece = piece_at_square(letter + number.to_s)
+        piece = piece_at_sq(letter + number.to_s)
         if piece.nil?
           result += " "
         else
@@ -27,20 +27,27 @@ class Board
     result += " 12345678"
   end
   
-  def move(old_position, new_position)
-    piece = piece_at_square(old_position)
-    return false if piece.nil? || !piece.valid_move?(old_position, new_position)
-    assign_piece(piece, new_position)
-    assign_piece(nil, old_position)
+  def move(old_sq, new_sq)
+    piece = piece_at_sq(old_sq)
+    return false unless valid_move?(piece, old_sq, new_sq)
+    assign_piece(piece, new_sq)
+    assign_piece(nil, old_sq)
   end
   
   # private
   
-  def piece_at_square(position)
-    @grid[position[0].ord - 97][position[1].to_i]
+  def valid_move?(piece, old_sq, new_sq)
+    return false if piece.nil? || !piece.valid_move?(old_sq, new_sq)
+    return false unless piece.intermediate_spaces(old_sq, new_sq)
+        .map { |i| piece_at_sq(i).nil? }.reduce(&:&)
+    true
   end
   
-  def assign_piece(piece, position)
-    @grid[position[0].ord - 97][position[1].to_i] = piece
+  def piece_at_sq(sq)
+    @grid[sq[0].ord - 97][sq[1].to_i]
+  end
+  
+  def assign_piece(piece, sq)
+    @grid[sq[0].ord - 97][sq[1].to_i] = piece
   end
 end
