@@ -1,10 +1,6 @@
-class Rook
-  attr_accessor :player
-  
-  def initialize(player)
-    @player = player
-  end
-  
+require_relative './chessman'
+
+class Rook < Chessman
   def to_s
     if @player == :white
       "\u2656"
@@ -13,7 +9,7 @@ class Rook
     end
   end
   
-  def valid_move?(old_sq, new_sq)
+  def valid_move?(old_sq, new_sq, capture = false)
     old_sq[0] == new_sq[0] || old_sq[1] == new_sq[1]
   end
   
@@ -25,12 +21,5 @@ class Rook
       chars_between(old_sq[0], new_sq[0]).each { |i| result << i + old_sq[1] }
     end
     result
-  end
-  
-  private
-      
-  def chars_between(char1, char2)
-    char1, char2 = char2, char1 if char1 > char2
-    (char1..char2).to_a[1..-2]
   end
 end
