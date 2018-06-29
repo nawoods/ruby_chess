@@ -2,11 +2,7 @@ require_relative './chessman'
 
 class Rook < Chessman
   def to_s
-    if @player == :white
-      "\u2656"
-    else
-      "\u265c"
-    end
+    @player == :white ? "\u2656" : "\u265c"
   end
   
   def valid_move?(old_sq, new_sq, capture = false)

@@ -9,8 +9,8 @@ class Pawn < Chessman
     if capture
       vert_dist(old_sq, new_sq) == 1 && horiz_dist(old_sq, new_sq).abs == 1
     else
-      old_sq[1] == new_sq[1] && (vert_dist(old_sq, new_sq) == 1 ||
-          (old_sq[0] == 'b' && vert_dist(old_sq, new_sq) == 2))
+      old_sq[0] == new_sq[0] && (vert_dist(old_sq, new_sq) == 1 ||
+          (['2','7'].include?(old_sq[1]) && vert_dist(old_sq, new_sq) == 2))
     end
   end
   
@@ -18,14 +18,14 @@ class Pawn < Chessman
     []
   end
   
-  private
+  # private
   
   def vert_dist(old_sq, new_sq)
-    dist = new_sq[0].ord - old_sq[0].ord
+    dist = new_sq[1].to_i - old_sq[1].to_i
     @player == :white ? dist : dist * -1
   end
   
   def horiz_dist(old_sq, new_sq)
-    new_sq[1].to_i - old_sq[1].to_i
+    new_sq[0].ord - old_sq[0].ord
   end
 end

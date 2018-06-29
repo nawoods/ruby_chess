@@ -9,9 +9,9 @@ class Board
   
   def to_s
     result = ''
-    ("a".."g").to_a.reverse.each do |letter|
-      result += letter
-      (1..8).to_a.each do |number|
+    (1..8).to_a.reverse.each do |number|
+      result += number.to_s
+      ('a'..'h').to_a.each do |letter|
         piece = piece_at_sq(letter + number.to_s)
         if piece.nil?
           result += " "
@@ -21,7 +21,7 @@ class Board
       end
       result += "\n"
     end
-    result += " 12345678"
+    result + " abcdefgh"
   end
   
   def move(old_sq, new_sq)
@@ -53,10 +53,10 @@ class Board
   
   def place_chessmen
     assign_piece(Rook.new(:white), "a1")
-    assign_piece(Rook.new(:white), "a8")
-    8.times { |i| assign_piece(Pawn.new(:white), "b#{i+1}") }
-    assign_piece(Rook.new(:black), "g1")
-    assign_piece(Rook.new(:black), "g8")
-    8.times { |i| assign_piece(Pawn.new(:black), "f#{i+1}") }
+    assign_piece(Rook.new(:white), "h1")
+    8.times { |i| assign_piece(Pawn.new(:white), "#{(i+97).chr}2") }
+    assign_piece(Rook.new(:black), "a8")
+    assign_piece(Rook.new(:black), "h8")
+    8.times { |i| assign_piece(Pawn.new(:black), "#{(i+97).chr}7") }
   end
 end
