@@ -2,30 +2,21 @@ require_relative './chessman'
 
 class Pawn < Chessman
   def to_s
-    @player == :white ? "\u2659" : "\u265f"
+    @player == :white ? "P" : "p"
   end
   
   def valid_move?(old_sq, new_sq, capture = false)
+    vert = vert_dist(old_sq, new_sq) * (@player == :white ? 1 : -1)
+    horiz = horiz_dist(old_sq, new_sq)
     if capture
-      vert_dist(old_sq, new_sq) == 1 && horiz_dist(old_sq, new_sq).abs == 1
+      vert == 1 && horiz.abs == 1
     else
-      old_sq[0] == new_sq[0] && (vert_dist(old_sq, new_sq) == 1 ||
-          (['2','7'].include?(old_sq[1]) && vert_dist(old_sq, new_sq) == 2))
+      old_sq[0] == new_sq[0] &&
+          (vert == 1 || (['2','7'].include?(old_sq[1]) && vert == 2))
     end
   end
   
   def intermediate_spaces(old_sq, new_sq)
     []
-  end
-  
-  # private
-  
-  def vert_dist(old_sq, new_sq)
-    dist = new_sq[1].to_i - old_sq[1].to_i
-    @player == :white ? dist : dist * -1
-  end
-  
-  def horiz_dist(old_sq, new_sq)
-    new_sq[0].ord - old_sq[0].ord
   end
 end
