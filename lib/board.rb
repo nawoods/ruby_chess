@@ -1,6 +1,7 @@
 require_relative './rook'
 require_relative './pawn'
 require_relative './bishop'
+require_relative './knight'
 
 class Board
   def initialize
@@ -54,13 +55,17 @@ class Board
   
   def place_chessmen
     assign_piece(Rook.new(:white), "a1")
+    assign_piece(Knight.new(:white), "b1")
     assign_piece(Bishop.new(:white), "c1")
     assign_piece(Bishop.new(:white), "f1")
+    assign_piece(Knight.new(:white), "g1")
     assign_piece(Rook.new(:white), "h1")
     8.times { |i| assign_piece(Pawn.new(:white), "#{(i+97).chr}2") }
     assign_piece(Rook.new(:black), "a8")
+    assign_piece(Knight.new(:black), "b8")
     assign_piece(Bishop.new(:black), "c8")
     assign_piece(Bishop.new(:black), "f8")
+    assign_piece(Knight.new(:black), "g8")
     assign_piece(Rook.new(:black), "h8")
     8.times { |i| assign_piece(Pawn.new(:black), "#{(i+97).chr}7") }
   end
