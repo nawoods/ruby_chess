@@ -2,6 +2,7 @@ require_relative './rook'
 require_relative './pawn'
 require_relative './bishop'
 require_relative './knight'
+require_relative './queen'
 
 class Board
   def initialize
@@ -57,6 +58,7 @@ class Board
     assign_piece(Rook.new(:white), "a1")
     assign_piece(Knight.new(:white), "b1")
     assign_piece(Bishop.new(:white), "c1")
+    assign_piece(Queen.new(:white), "d1")
     assign_piece(Bishop.new(:white), "f1")
     assign_piece(Knight.new(:white), "g1")
     assign_piece(Rook.new(:white), "h1")
@@ -64,6 +66,7 @@ class Board
     assign_piece(Rook.new(:black), "a8")
     assign_piece(Knight.new(:black), "b8")
     assign_piece(Bishop.new(:black), "c8")
+    assign_piece(Queen.new(:black), "d8")
     assign_piece(Bishop.new(:black), "f8")
     assign_piece(Knight.new(:black), "g8")
     assign_piece(Rook.new(:black), "h8")
