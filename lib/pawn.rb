@@ -15,8 +15,4 @@ class Pawn < Chessman
           (vert == 1 || (['2','7'].include?(old_sq[1]) && vert == 2))
     end
   end
-  
-  def intermediate_spaces(old_sq, new_sq)
-    []
-  end
 end

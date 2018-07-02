@@ -9,6 +9,10 @@ class Chessman
     "?"
   end
   
+  def intermediate_spaces(old_sq, new_sq)
+    []
+  end
+  
   protected
   
   def chars_between(char1, char2)

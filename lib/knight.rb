@@ -10,8 +10,4 @@ class Knight < Chessman
     horiz = horiz_dist(old_sq, new_sq).abs
     (vert == 2 && horiz == 1) || (vert == 1 && horiz == 2)
   end
-  
-  def intermediate_spaces(old_sq, new_sq)
-    []
-  end
 end

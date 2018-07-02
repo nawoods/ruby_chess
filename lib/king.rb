@@ -10,8 +10,4 @@ class King < Chessman
     horiz = horiz_dist(old_sq, new_sq).abs
     [vert, horiz].max == 1
   end
-  
-  def intermediate_spaces(old_sq, new_sq)
-    []
-  end
 end
