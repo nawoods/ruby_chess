@@ -28,11 +28,13 @@ class Board
     result + " abcdefgh"
   end
   
-  def move(old_sq, new_sq)
+  def move(player, old_sq, new_sq)
     piece = piece_at_sq(old_sq)
+    return false unless player == piece.player
     return false unless valid_move?(piece, old_sq, new_sq)
     assign_piece(piece, new_sq)
     assign_piece(nil, old_sq)
+    true
   end
   
   private
@@ -56,23 +58,10 @@ class Board
   end
   
   def place_chessmen
-    assign_piece(Rook.new(:white), "a1")
-    assign_piece(Knight.new(:white), "b1")
-    assign_piece(Bishop.new(:white), "c1")
-    assign_piece(Queen.new(:white), "d1")
-    assign_piece(King.new(:white), "e1")
-    assign_piece(Bishop.new(:white), "f1")
-    assign_piece(Knight.new(:white), "g1")
-    assign_piece(Rook.new(:white), "h1")
-    8.times { |i| assign_piece(Pawn.new(:white), "#{(i+97).chr}2") }
-    assign_piece(Rook.new(:black), "a8")
-    assign_piece(Knight.new(:black), "b8")
-    assign_piece(Bishop.new(:black), "c8")
-    assign_piece(Queen.new(:black), "d8")
-    assign_piece(King.new(:black), "e8")
-    assign_piece(Bishop.new(:black), "f8")
-    assign_piece(Knight.new(:black), "g8")
-    assign_piece(Rook.new(:black), "h8")
+    back_row = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
+    8.times { |i| assign_piece(back_row[i].new(:black), "#{(i+97).chr}8") }
     8.times { |i| assign_piece(Pawn.new(:black), "#{(i+97).chr}7") }
+    8.times { |i| assign_piece(Pawn.new(:white), "#{(i+97).chr}2") }
+    8.times { |i| assign_piece(back_row[i].new(:white), "#{(i+97).chr}1") }
   end
 end
