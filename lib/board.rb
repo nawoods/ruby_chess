@@ -38,6 +38,20 @@ class Board
     true
   end
   
+  def threatening_sq(sq, player)
+    ('a'..'h').each do |i|
+      (1..8).each do |j|
+        old_sq = i.to_s + j.to_s
+        piece = piece_at_sq(old_sq)
+        next if piece.nil? or piece.player != player
+        return true if piece.valid_move?(old_sq, sq, true) && 
+            piece.intermediate_spaces(old_sq, sq)
+                .map { |k| piece_at_sq(k).nil? }.reduce(true, :&)
+      end
+    end
+    false
+  end
+  
   private
   
   def reassign_pieces(old_sq, new_sq, player, en_passant)
