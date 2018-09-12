@@ -1,7 +1,8 @@
 require_relative './board'
 
 class Game
-  attr_reader :current_player
+  attr_reader :current_player, :board
+  attr_reader :board
   
   def initialize
     @board = Board.new
@@ -17,14 +18,40 @@ class Game
   end
   
   def move(old_sq, new_sq)
-    return false if !@board.move(old_sq, new_sq, @current_player, @en_passant)
-    @en_passant = (two_rank_pawn_move?(old_sq, new_sq) ? old_sq[0] : nil)
-    update_castle_variables(old_sq, new_sq)
+    if valid_castle?(old_sq, new_sq)
+      return false unless castle_move(old_sq, new_sq)
+    else
+      return false unless non_castle_move(old_sq, new_sq)
+    end
     @current_player = (@current_player == :white ? :black : :white)
     true
   end
   
   private
+  
+  def castle_move(old_sq, new_sq)
+    return false unless @board.castle(old_sq, new_sq, @current_player)
+    update_castle_variables(old_sq, new_sq)
+    @en_passant = nil
+    true
+  end
+  
+  def non_castle_move(old_sq, new_sq)
+    return false unless @board.move(old_sq, new_sq, @current_player, @en_passant)
+    update_castle_variables(old_sq, new_sq)
+    @en_passant = (two_rank_pawn_move?(old_sq, new_sq) ? old_sq[0] : nil)
+    true
+  end
+  
+  def valid_castle?(old_sq, new_sq)
+    @board.piece_at_sq(old_sq).is_a?(King) && old_sq[1] == new_sq[1] &&
+        ((@current_player == :white &&
+            (@white_k_castle && new_sq[0] == 'g') ||
+            (@white_q_castle && new_sq[0] == 'c')) ||
+        (@current_player == :black &&
+            (@black_k_castle && new_sq[0] == 'g') ||
+            (@black_q_castle && new_sq[0] == 'c')))
+  end
   
   def two_rank_pawn_move?(old_sq, new_sq)
     start_row = (@current_player == :white ? "2" : "7")
@@ -41,7 +68,7 @@ class Game
   end
   
   def update_castle_variables(old_sq, new_sq)
-    if @board.piece_at_sq(new_sq).is_a? King
+    if @board.piece_at_sq(new_sq).is_a?(King)
       if @current_player == :white
         @white_k_castle = false
         @white_q_castle = false
@@ -51,12 +78,14 @@ class Game
       end
     end
     
-    if @board.piece_at_sq(new_sq).is_a? Rook
-      @white_k_castle = false if old_sq == 'h1'
-      @white_q_castle = false if old_sq == 'a1'
-      @black_k_castle = false if old_sq == 'h8'
-      @black_q_castle = false if old_sq == 'a8'
-    end
+    @white_k_castle = false unless @board.piece_at_sq('h1').is_a?(Rook) &&
+        @board.piece_at_sq('h1').player == :white
+    @white_q_castle = false unless @board.piece_at_sq('a1').is_a?(Rook) &&
+        @board.piece_at_sq('a1').player == :white
+    @black_k_castle = false unless @board.piece_at_sq('h8').is_a?(Rook) &&
+        @board.piece_at_sq('h8').player == :black
+    @black_q_castle = false unless @board.piece_at_sq('a8').is_a?(Rook) &&
+        @board.piece_at_sq('a8').player == :black
   end
   
 end
