@@ -2,7 +2,6 @@ require_relative './board'
 
 class Game
   attr_reader :current_player, :board
-  attr_reader :board
   
   def initialize
     @board = Board.new

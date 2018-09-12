@@ -40,10 +40,16 @@ class Board
   
   def castle(old_sq, new_sq, player)
     row = (player == :white ? '1' : '8')
-    rook_start = (new_sq[0] == 'g' ? 'h' : 'a')
-    rook_end = (new_sq[0] == 'g' ? 'f' : 'd')
+    if new_sq[0] == 'g'
+      return false unless ['f', 'g'].map { |i| piece_at_sq(i+row).nil? }
+          .reduce(:&)
+      reassign_pieces('h' + row, 'f' + row, player, nil)
+    else
+      return false unless ['b', 'c', 'd'].map { |i| piece_at_sq(i+row).nil? }
+          .reduce(:&)
+      reassign_pieces('a' + row, 'd' + row, player, nil)
+    end
     reassign_pieces(old_sq, new_sq, player, nil)
-    reassign_pieces(rook_start + row, rook_end + row, player, nil)
     true
   end
   
