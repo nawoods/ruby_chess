@@ -40,16 +40,29 @@ class Board
   
   def castle(old_sq, new_sq, player)
     row = (player == :white ? '1' : '8')
-    if new_sq[0] == 'g'
-      return false unless ['f', 'g'].map { |i| piece_at_sq(i+row).nil? }
-          .reduce(:&)
-      reassign_pieces('h' + row, 'f' + row, player, nil)
-    else
-      return false unless ['b', 'c', 'd'].map { |i| piece_at_sq(i+row).nil? }
-          .reduce(:&)
-      reassign_pieces('a' + row, 'd' + row, player, nil)
-    end
+    return false unless new_sq[0] == 'g' ? 
+        king_side_castle(row, player) : queen_side_castle(row, player)
     reassign_pieces(old_sq, new_sq, player, nil)
+    true
+  end
+  
+  def king_side_castle(row, player)
+    return false unless ['e', 'f', 'g']
+        .map { |i| pieces_attacking_sq(i+row, opponent(player)) }
+        .flatten.length == 0
+    return false unless ['f', 'g'].map { |i| piece_at_sq(i+row).nil? }
+        .reduce(:&)
+    reassign_pieces('h' + row, 'f' + row, player, nil)
+    true
+  end
+  
+  def queen_side_castle(row, player)
+    return false unless ['c', 'd', 'e']
+        .map { |i| pieces_attacking_sq(i+row, opponent(player)) }
+        .flatten.length == 0
+    return false unless ['b', 'c', 'd'].map { |i| piece_at_sq(i+row).nil? }
+        .reduce(:&)
+    reassign_pieces('a' + row, 'd' + row, player, nil)
     true
   end
   
@@ -122,5 +135,23 @@ class Board
     8.times { |i| assign_piece(Pawn.new(:black), "#{(i+97).chr}7") }
     8.times { |i| assign_piece(Pawn.new(:white), "#{(i+97).chr}2") }
     8.times { |i| assign_piece(back_row[i].new(:white), "#{(i+97).chr}1") }
+  end
+  
+  def all_squares
+    ('a'..'h').map { |i| ('1'..'8').map { |j| i + j } }.flatten
+  end
+  
+  def opponent(player)
+    player == :white ? :black : :white
+  end
+  
+  def players_pieces(player)
+    all_squares.select do |i|
+      !piece_at_sq(i).nil? && piece_at_sq(i).player == player
+    end
+  end
+  
+  def pieces_attacking_sq(sq, player)
+    players_pieces(player).select { |i| valid_normal_move?(i, sq, player) }
   end
 end
