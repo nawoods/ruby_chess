@@ -6,6 +6,7 @@ class Game
   def initialize
     @board = Board.new
     @current_player = :white
+    @expect_promotion = nil
     initialize_castle_variables
     
     # if pawn moves 2 spaces, keep track of column for next turn
@@ -17,16 +18,34 @@ class Game
   end
   
   def move(old_sq, new_sq)
+    return false if @expect_promotion
     if valid_castle?(old_sq, new_sq)
       return false unless castle_move(old_sq, new_sq)
     else
       return false unless non_castle_move(old_sq, new_sq)
     end
-    @current_player = (@current_player == :white ? :black : :white)
+    promotion_move?(new_sq) ? @expect_promotion = new_sq : switch_current_player
+    true
+  end
+  
+  def promote(promote_to)
+    return false unless @expect_promotion
+    return false unless [Queen, Bishop, Knight, Rook].include?(promote_to)
+    @board.promote(@expect_promotion, promote_to, @current_player)
+    switch_current_player
+    @expect_promotion = nil
     true
   end
   
   private
+  
+  def switch_current_player
+    @current_player = (@current_player == :white ? :black : :white)
+  end
+  
+  def promotion_move?(sq)
+    ['1', '8'].include?(sq[1]) && @board.piece_at_sq(sq).is_a?(Pawn)
+  end
   
   def castle_move(old_sq, new_sq)
     return false unless @board.castle(old_sq, new_sq, @current_player)
@@ -86,5 +105,4 @@ class Game
     @black_q_castle = false unless @board.piece_at_sq('a8').is_a?(Rook) &&
         @board.piece_at_sq('a8').player == :black
   end
-  
 end

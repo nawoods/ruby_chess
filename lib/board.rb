@@ -46,6 +46,12 @@ class Board
     true
   end
   
+  def promote(sq, piece, player)
+    assign_piece(piece.new(player), sq)
+  end
+  
+  private
+  
   def king_side_castle(row, player)
     return false unless ['e', 'f', 'g']
         .map { |i| pieces_attacking_sq(i+row, opponent(player)) }
@@ -82,8 +88,6 @@ class Board
     result
   end
   
-  private
-  
   def reassign_pieces(old_sq, new_sq, player, en_passant)
     if valid_en_passant_capture?(old_sq, new_sq, player, en_passant)
       assign_piece(nil, en_passant_victim(new_sq))
@@ -93,6 +97,7 @@ class Board
   end
   
   def valid_move?(old_sq, new_sq, player, en_passant)
+    return false if pieces_attacking_sq(king_sq(player), opponent(player)).length > 0
     valid_normal_move?(old_sq, new_sq, player) ||
         valid_en_passant_capture?(old_sq, new_sq, player, en_passant)
   end
@@ -153,5 +158,9 @@ class Board
   
   def pieces_attacking_sq(sq, player)
     players_pieces(player).select { |i| valid_normal_move?(i, sq, player) }
+  end
+  
+  def king_sq(player)
+    players_pieces(player).select { |i| piece_at_sq(i).is_a?(King) }.first
   end
 end

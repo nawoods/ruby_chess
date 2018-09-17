@@ -93,4 +93,94 @@ describe Game do
       end
     end
   end
+  
+  describe "#move" do
+    subject { Game.new }
+    
+    context "when king is in check" do
+      before(:each) do
+        subject.move('b1', 'c3')
+        subject.move('h7', 'h6')
+        subject.move('c3', 'e4')
+        subject.move('h6', 'h5')
+        subject.move('e4', 'd6')
+      end
+      
+      it "does not allow irrelevant pieces to move" do
+        expect(subject.move('h5', 'h4')).to be(false)
+      end
+    end
+    
+    context "when promoting" do
+      before(:each) do
+        subject.move('d2', 'd3')
+        subject.move('h7', 'h6')
+        subject.move('c1', 'h6')
+        subject.move('a7', 'a6')
+        subject.move('h6', 'e3')
+        subject.move('a6', 'a5')
+        subject.move('h2', 'h4')
+        subject.move('h8', 'h6')
+        subject.move('h4', 'h5')
+        subject.move('h6', 'a6')
+        subject.move('h5', 'h6')
+        subject.move('a5', 'a4')
+        subject.move('h6', 'h7')
+        subject.move('a4', 'a3')
+        subject.move('h7', 'h8')
+      end
+      
+      it "does not change the current player" do
+        expect(subject.current_player).to eq(:white)
+      end
+      
+      it "does not allow current player to make another move" do
+        expect(subject.move('g2', 'g3')).to eq(false)
+      end
+    end
+  end
+  
+  describe "#promote" do
+    subject { Game.new }
+    
+    context "when no piece to promote" do
+      it "does nothing" do
+        expect(subject.promote(Queen)).to eq(false)
+      end
+    end
+    
+    context "when there is a piece to promote" do
+      before(:each) do
+        subject.move('d2', 'd3')
+        subject.move('h7', 'h6')
+        subject.move('c1', 'h6')
+        subject.move('a7', 'a6')
+        subject.move('h6', 'e3')
+        subject.move('a6', 'a5')
+        subject.move('h2', 'h4')
+        subject.move('h8', 'h6')
+        subject.move('h4', 'h5')
+        subject.move('h6', 'a6')
+        subject.move('h5', 'h6')
+        subject.move('a5', 'a4')
+        subject.move('h6', 'h7')
+        subject.move('a4', 'a3')
+        subject.move('h7', 'h8')
+      end
+      
+      it "returns true" do
+        expect(subject.promote(Queen)).to eq(true)
+      end
+        
+      it "replaces pawn with indicated piece" do
+        subject.promote(Queen)
+        expect(subject.board.piece_at_sq('h8')).to be_instance_of(Queen)
+      end
+      
+      it "allows opponent to move afterward" do
+        subject.promote(Queen)
+        expect(subject.move('a3', 'b2')).to eq(true)
+      end
+    end
+  end
 end
