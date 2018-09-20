@@ -6,8 +6,11 @@ require_relative './queen'
 require_relative './king'
 
 class Board
+  attr_reader :pinned
+  
   def initialize
     @grid = Array.new(8) { Array.new(8) }
+    @pinned = []
     place_chessmen
   end
   
@@ -97,9 +100,26 @@ class Board
   end
   
   def valid_move?(old_sq, new_sq, player, en_passant)
-    return false if pieces_attacking_sq(king_sq(player), opponent(player)).length > 0
-    valid_normal_move?(old_sq, new_sq, player) ||
-        valid_en_passant_capture?(old_sq, new_sq, player, en_passant)
+    if pieces_attacking_sq(king_sq(player), opponent(player)).length > 0
+      valid_move_out_of_check?(old_sq, new_sq, player)
+    else
+      valid_normal_move?(old_sq, new_sq, player) ||
+          valid_en_passant_capture?(old_sq, new_sq, player, en_passant)
+    end
+  end
+  
+  def valid_move_out_of_check?(old_sq, new_sq, player)
+    update_pinned(player)
+    pieces_attacking_king = pieces_attacking_sq(king_sq(player), opponent(player)) 
+    if piece_at_sq(old_sq).is_a?(King)
+      pieces_attacking_sq(new_sq, opponent(player)).length == 0
+    else
+      return false unless pieces_attacking_king.length == 1 && 
+          valid_normal_move?(old_sq, new_sq, player) && !@pinned.include?(old_sq)
+      attacker = pieces_attacking_king[0]
+      mid = piece_at_sq(attacker).intermediate_spaces(attacker, king_sq(player))
+      (mid + [attacker]).include?(new_sq)
+    end
   end
   
   def valid_normal_move?(old_sq, new_sq, player)
@@ -158,6 +178,19 @@ class Board
   
   def pieces_attacking_sq(sq, player)
     players_pieces(player).select { |i| valid_normal_move?(i, sq, player) }
+  end
+  
+  def update_pinned(player)
+    @pinned = []
+    players_pieces(opponent(player)).each do |i|
+      king = king_sq(player)
+      next unless piece_at_sq(i).valid_move?(i, king)
+      mid = piece_at_sq(i).intermediate_spaces(i, king)
+          .reject { |j| piece_at_sq(j).nil? }
+      if mid.length == 1 && piece_at_sq(mid[0]).player == player
+        @pinned << mid[0]
+      end
+    end
   end
   
   def king_sq(player)

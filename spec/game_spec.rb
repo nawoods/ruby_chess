@@ -138,6 +138,46 @@ describe Game do
         expect(subject.move('g2', 'g3')).to eq(false)
       end
     end
+    
+    context "when king is in check (but not checkmate)" do
+      before(:each) do
+        subject.move('f2', 'f3')
+        subject.move('e7', 'e5')
+        subject.move('e2', 'e4')
+        subject.move('d8', 'h4')
+      end
+      
+      it "does not allow irrelevant moves" do
+        expect(subject.move('a2', 'a3')).to eq(false)
+      end
+      
+      it "allows the king to move itself out of check" do
+        expect(subject.move('e1', 'e2')).to eq(true)
+      end
+      
+      it "does not allow the king to move itself into check" do
+        expect(subject.move('e1', 'f2')).to eq(false)
+      end
+      
+      it "allows another piece to move in the way" do
+        expect(subject.move('g2', 'g3')).to eq(true)
+      end
+      
+      it "does not allow pinned piece to move" do
+        g = Game.new
+        g.move('e2', 'e4')
+        g.move('e7', 'e5')
+        g.move('d2', 'd4')
+        g.move('d7', 'd5')
+        g.move('e4', 'd5')
+        g.move('e5', 'd4')
+        g.move('f1', 'b5')
+        g.move('d8', 'd7')
+        g.move('d1', 'e2')
+        
+        expect(g.move('d7', 'e7')).to eq(false)
+      end
+    end
   end
   
   describe "#promote" do

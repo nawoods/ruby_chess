@@ -7,6 +7,7 @@ class Game
     @board = Board.new
     @current_player = :white
     @expect_promotion = nil
+    @winner = nil
     initialize_castle_variables
     
     # if pawn moves 2 spaces, keep track of column for next turn
